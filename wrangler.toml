@@ -1,8 +1,8 @@
 name = "anime-scraper"
-main = "src/index.js"
+main = "index.js"
 compatibility_date = "2025-08-22"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "anime-db"
+database_name = "anime"
 database_id = "REPLACE_WITH_YOUR_DB_ID"

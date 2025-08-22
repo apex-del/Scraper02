@@ -5,4 +5,4 @@ compatibility_date = "2025-08-22"
 [[d1_databases]]
 binding = "DB"
 database_name = "anime"
-database_id = "REPLACE_WITH_YOUR_DB_ID"
+database_id = "4ea68080-166a-4819-b467-0255c6e044cc"

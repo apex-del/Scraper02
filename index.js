@@ -10,7 +10,7 @@ export default {
       ).first();
 
       const startId = lastRow ? lastRow.id + 1 : 1;
-      const endId = startId + 99; // Scrape 10 entries per run
+      const endId = startId + 100; // Scrape 10 entries per run
 
       let insertedCount = 0;
 

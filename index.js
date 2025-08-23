@@ -6,7 +6,7 @@ export default {
         "SELECT id FROM anime ORDER BY id DESC LIMIT 1"
       ).first();
       let startId = lastRow ? lastRow.id + 1 : 1;
-      let endId = startId + 10;
+      let endId = startId + 100;
 
       let inserted = [];
 

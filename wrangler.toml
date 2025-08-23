@@ -6,3 +6,5 @@ compatibility_date = "2025-08-22"
 binding = "DB"
 database_name = "anime"
 database_id = "4ea68080-166a-4819-b467-0255c6e044cc"
+[triggers]
+crons = ["0 */30 * * *"]  # Every 6 hours

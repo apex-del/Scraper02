@@ -1,37 +1,41 @@
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
+    return new Response("Anime Scraper Worker Active ✅");
+  },
+
+  async scheduled(event, env, ctx) {
     try {
-      // Get last scraped ID
       const lastRow = await env.DB.prepare(
         "SELECT id FROM anime ORDER BY id DESC LIMIT 1"
       ).first();
-      let startId = lastRow ? lastRow.id + 1 : 1;
-      let endId = startId + 100;
 
-      let inserted = [];
+      const startId = lastRow ? lastRow.id + 1 : 1;
+      const endId = startId + 99; // Scrape 10 entries per run
 
-      for (let i = startId; i <= endId; i++) {
-        const data = await scrapeAnime(i);
+      let insertedCount = 0;
 
-        if (data && data.name !== "❌ Error") {
+      for (let id = startId; id <= endId; id++) {
+        const data = await scrapeAnime(id);
+
+        if (data.name !== "❌ Error") {
           await env.DB.prepare(
             "INSERT OR IGNORE INTO anime (id, name, poster, syncData) VALUES (?, ?, ?, ?)"
-          ).bind(
-            data.id,
-            data.name,
-            data.poster,
-            JSON.stringify(data.syncData)
-          ).run();
+          )
+          .bind(id, data.name, data.poster, JSON.stringify(data.syncData))
+          .run();
 
-          inserted.push(data.name);
+          insertedCount++;
         }
       }
 
-      return new Response(`✅ Inserted ${inserted.length} entries, last ID = ${endId}`);
+      console.log(
+        `Cron run succeeded. Inserted ${insertedCount} entries. Last scraped ID = ${endId}`
+      );
+
     } catch (err) {
-      return new Response("❌ Error: " + err.message, { status: 500 });
+      console.error("Cron run failed:", err);
     }
-  },
+  }
 };
 
 async function scrapeAnime(id, retry = 1) {
@@ -65,12 +69,12 @@ async function scrapeAnime(id, retry = 1) {
     }
 
     return { id, name: animeName, poster: posterUrl, syncData };
+
   } catch (err) {
     if (retry > 0) {
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(res => setTimeout(res, 3000));
       return scrapeAnime(id, retry - 1);
-    } else {
-      return { id, name: "❌ Error", poster: null, syncData: null };
     }
+    return { id, name: "❌ Error", poster: null, syncData: null };
   }
 }
